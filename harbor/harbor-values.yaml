@@ -1,0 +1,41 @@
+---
+# harbor-values.yaml
+expose:
+  type: ingress
+  tls:
+    enabled: true
+    certSource: auto
+  ingress:
+    hosts:
+      core: harbor.local
+      notary: notary.harbor.local
+    controller: default
+    className: nginx
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+externalURL: https://harbor.local
+persistence:
+  persistentVolumeClaim:
+    registry:
+      size: 1Gi
+    chartmuseum:
+      size: 512Mi
+    jobservice:
+      size: 512Mi
+    database:
+      size: 512Mi
+    redis:
+      size: 512Mi
+    trivy:
+      size: 512Mi
+trivy:
+  enabled: true
+  skipUpdate: false
+  insecure: true
+  # Optional: insert a valid GitHub token for higher API rate limits
+  gitHubToken: ""
+harborAdminPassword: "Harbor12345"
+logLevel: debug
+notary:
+  enabled: true

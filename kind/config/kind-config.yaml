@@ -1,0 +1,50 @@
+---
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: gitops-lab
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+      - containerPort: 443
+        hostPort: 443      
+        protocol: TCP
+      # next is gitea http reserved port
+      # use if not adding an ingress nginx controller resource,
+      # if the ingress is used, this next port can be commented.
+      - containerPort: 30003
+        hostPort: 30003
+        protocol: TCP
+      # next is gitea ssh reserved port
+      # use if not adding an ingress nginx controller resource,
+      # if the ingress is used, this next port can be commented.
+      - containerPort: 30022
+        hostPort: 30022
+        protocol: TCP
+      # next is dragonfly manager reserved port
+      # use if not adding an ingress nginx controller resource,
+      # if the ingress is used, this next port can be commented.
+      - containerPort: 30010
+        hostPort: 30010
+        protocol: TCP
+      # next is argocd ui reserved port
+      # use if not adding an ingress nginx controller resource,
+      # if the ingress is used, this next port can be commented.
+      - containerPort: 30008
+        hostPort: 30008
+        protocol: TCP
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+    extraMounts:
+      - hostPath: /tmp/harbor-data
+        containerPath: /var/lib/harbor
+containerdConfigPatches:
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:5000"]
+      endpoint = ["http://kind-registry:5000"]

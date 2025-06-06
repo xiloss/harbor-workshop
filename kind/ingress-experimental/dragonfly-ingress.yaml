@@ -1,0 +1,21 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dragonfly-manager
+  namespace: dragonfly-system
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: dragonfly.kind.local
+      http:
+        paths:
+          - path: /manager(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: dragonfly-manager
+                port:
+                  number: 65000
